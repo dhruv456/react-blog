@@ -12,27 +12,53 @@ class AuthSerive {
 
     async createAccount(loginDetails) {
         const { emailId, password, name } = loginDetails
-        const result = await this.account.create(
-            nanoid(), // userId
-            emailId, // email
-            password, // password
-            name // name (optional)
-        );
-        console.log(result)
+        try {
+            const result = await this.account.create(
+                nanoid(), // userId
+                emailId, // email
+                password, // password
+                name // name (optional)
+            );
+            console.log(result)
+            return true
+        } catch (error) {
+            console.error("Appwrite Service :: creating account :: error", error);
+            return false;
+        }
     }
 
     async login(loginDetails) {
-        const { emailId, password, name } = loginDetails
-        this.session = await this.account.createEmailPasswordSession(
-            emailId,
-            password,
-            name
-        );
-        console.log(this.session)
+        try {
+            const { emailId, password, name } = loginDetails
+            this.session = await this.account.createEmailPasswordSession(
+                emailId,
+                password,
+                name
+            );
+            console.log(this.session)
+            return true;
+        } catch (error) {
+            console.error("Appwrite Service :: Login :: error", error);
+            return false;
+        }
+
     }
-    async GetLogInUser() {
+
+    async getLogInUser() {
         const user = this.account.get()
+        this.session = user.targets
         return user;
+    }
+
+    async logout() {
+        try {
+            const currSession = await this.account.getSession('current')
+            await this.account.deleteSession(currSession.$id);
+            return true;
+        } catch (error) {
+            console.log("appwrite service :: logout :: error", error)
+            return false;
+        }
     }
 }
 

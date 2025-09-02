@@ -6,49 +6,28 @@ import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "./feature/authSlice";
+import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
+import Layout from "./Layout/Layout";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import AllPost from "./pages/AllPost";
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-  const userState = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const user = await authService.getLogInUser();
-        if (!user) {
-          dispatch(logout());
-        }
-        dispatch(login(user));
-        console.log(user);
-      } catch (error) {
-        console.error("Header Component :: checkAuth :: error", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkAuth();
-  }, []);
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-600 flex items-center justify-center p-4">
-        <h1 className="text-4xl text-white">Loading...</h1>
-      </div>
-    );
-  } else {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-600 flex items-center justify-center p-4 flex-col text-amber-50">
-        {userState.status && (
-          <>
-            <Header />
-            <h1 className="text-4xl">Hello {userState.userData.name}</h1>
-            <Footer />
-          </>
-        )}
-        {!userState.status && <h1 className="text-4xl">Please log in</h1>}
-      </div>
-    );
-  }
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-600 flex items-center justify-center flex-col text-amber-50">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
+            <Route path="posts" element={<AllPost />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
 }
 
 export default App;

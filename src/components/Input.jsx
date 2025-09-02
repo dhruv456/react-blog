@@ -1,17 +1,24 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 
-const Input = ({ lable, type = "text", value, setValue }) => {
+const Input = React.forwardRef((_, ref) => {
+  const { label, type = "text", className = "", ...props } = _;
+  const id = useId;
   return (
-    <div>
-      <label>{lable}</label>
+    <div className="w-full">
+      {label && (
+        <label className="inline-block mb-l pl-l" htmlFor={id}>
+          {label}
+        </label>
+      )}
       <input
-        className="border"
+        ref={ref}
+        className={`px-3 py-2 rounded-lg bg-white text-black outline-none focus:bg-gray-500 w-full duration-200 ${className}`}
         type={type}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
+        {...props}
+        id={id}
       />
     </div>
   );
-};
+});
 
 export default Input;

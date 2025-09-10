@@ -14,6 +14,18 @@ import Signup from "./pages/Signup";
 import AllPost from "./pages/AllPost";
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await authService.getLogInUser();
+      if (res) {
+        dispatch(login(res.name));
+      } else {
+        dispatch(logout());
+      }
+    };
+    checkAuth();
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-600 flex items-center justify-center flex-col text-amber-50">
       <BrowserRouter>

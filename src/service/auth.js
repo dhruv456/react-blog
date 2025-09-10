@@ -41,7 +41,6 @@ class AuthSerive {
             console.error("Appwrite Service :: Login :: error", error);
             return false;
         }
-
     }
 
     async getLogInUser() {

@@ -1,8 +1,7 @@
-import React, { useId, useState } from "react";
+import { useId } from "react";
 
-const Input = React.forwardRef((_, ref) => {
-  const { label, type = "text", className = "", ...props } = _;
-  const id = useId;
+const Input = ({ label, type = "text", className = "", ...props }) => {
+  const id = useId();
   return (
     <div className="w-full">
       {label && (
@@ -11,14 +10,13 @@ const Input = React.forwardRef((_, ref) => {
         </label>
       )}
       <input
-        ref={ref}
-        className={`px-3 py-2 rounded-lg bg-white text-black outline-none focus:bg-gray-500 w-full duration-200 ${className}`}
+        className={`px-3 py-2 rounded-lg bg-white text-black focus:outline-blue-800 w-full duration-200 ${className}`}
         type={type}
         {...props}
         id={id}
       />
     </div>
   );
-});
+};
 
 export default Input;

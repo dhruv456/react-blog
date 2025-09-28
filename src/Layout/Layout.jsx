@@ -7,7 +7,7 @@ const Layout = () => {
   return (
     <>
       <Header />
-      <main className="flex-grow py-8">
+      <main className="flex-grow py-8 w-xl mx-auto px-4">
         <Outlet />
       </main>
       <Footer />

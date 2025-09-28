@@ -1,0 +1,45 @@
+import { data, useParams } from "react-router-dom";
+import DOMPurify from "dompurify";
+import { useEffect, useState } from "react";
+import dataService from "../service/data";
+import ShadowRootContainer from "../components/Container/ShadowRootContainer";
+
+const Post = () => {
+  const { id } = useParams();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    async function fetchAllData() {
+      const post = await dataService.getPostById(id);
+      setLoading(false);
+      if (post) {
+        setTitle(post.title);
+        setContent(post.content);
+      } else {
+        setNotFound(true);
+      }
+    }
+
+    fetchAllData();
+  }, []);
+  if (loading) return <div>Loading...</div>;
+  if (notFound) return <div>Post not found</div>;
+  return (
+    <div>
+      <ShadowRootContainer>
+        <div>
+          <h2>{title}</h2>
+          <div
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
+          />
+        </div>
+      </ShadowRootContainer>
+      <h1>Post slug: {id}</h1>
+    </div>
+  );
+};
+
+export default Post;

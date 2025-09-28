@@ -2,6 +2,7 @@ import { useId } from "react";
 
 const Input = ({ label, type = "text", className = "", ...props }) => {
   const id = useId();
+  console.log("Input rendered - ", label, props.value);
   return (
     <div className="w-full">
       {label && (

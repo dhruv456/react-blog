@@ -25,7 +25,7 @@ const Header = () => {
     },
     {
       name: "All Posts",
-      slug: "/posts",
+      slug: "/all-posts",
       active: authStatus,
     },
     {

@@ -1,5 +1,6 @@
-import { Databases, ID, Query } from "appwrite";
+import { Account, Client, Databases, ID, Query } from "appwrite";
 import conf from "../conf/conf";
+import authService from "./auth";
 
 class DataService {
     constructor() {
@@ -7,22 +8,38 @@ class DataService {
             .setEndpoint(conf.appWriteEndpoint)
             .setProject(conf.appWriteProjectId);
         this.account = new Account(this.client);
-        this.databases = new Databases(client);
+        this.databases = new Databases(this.client);
+    }
+
+    async getPostById(slug) {
+        try {
+            const result = await this.databases.getDocument(
+                conf.appWriteDatabaseId,
+                conf.appWriteCollectionId,
+                slug
+            );
+            return result;
+        } catch (error) {
+            console.error("appwrite service :: getPost :: error", error);
+            return null;
+        }
     }
 
     async createPost(post) {
-        const { title, content, featuredImage, status, slug, userId } = post
+        const { title, content, featuredImage = "", status, slug, userId } = post
+        const userId_ot = userId || (await authService.getLogInUser()).$id
         try {
-            const result = await this.databases.createDocument({
-                databaseId: conf.appWriteDatabaseId,
-                collectionId: conf.appWriteCollectionId,
-                documentId: slug,
-                data: { title, content, featuredImage, status, userId },
-            });
+            const result = await this.databases.createDocument(
+                conf.appWriteDatabaseId,
+                conf.appWriteCollectionId,
+                slug,
+                { title, content, featuredImage, status, userId: userId_ot },
+            );
+            return result;
         } catch (error) {
-            return false;
+            console.error("appwrite service :: createPost :: error", error);
+            throw error;
         }
-        return true;
     }
 
     async updatePost(post) {
@@ -42,11 +59,11 @@ class DataService {
 
     async getListOfPosts(query = [Query.equal("status", "active")]) {
         try {
-            const result = await this.databases.listDocuments({
-                databaseId: conf.appWriteDatabaseId,
-                collectionId: conf.appWriteCollectionId,
-                queries: query,
-            });
+            const result = await this.databases.listDocuments(
+                conf.appWriteDatabaseId,
+                conf.appWriteCollectionId,
+                query
+            );
             return result.documents;
         } catch (error) {
             console.error("appwrite service :: getListOfPosts :: error", error);

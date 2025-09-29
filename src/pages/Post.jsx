@@ -10,6 +10,7 @@ const Post = () => {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [imageSrc, setImageSrc] = useState("");
 
   useEffect(() => {
     async function fetchAllData() {
@@ -18,6 +19,9 @@ const Post = () => {
       if (post) {
         setTitle(post.title);
         setContent(post.content);
+        setImageSrc(
+          post.featuredImage ? dataService.getFileUrl(post.featuredImage) : ""
+        );
       } else {
         setNotFound(true);
       }
@@ -29,6 +33,7 @@ const Post = () => {
   if (notFound) return <div>Post not found</div>;
   return (
     <div>
+      {imageSrc && <img src={imageSrc} />}
       <ShadowRootContainer>
         <div>
           <h2>{title}</h2>
@@ -37,7 +42,6 @@ const Post = () => {
           />
         </div>
       </ShadowRootContainer>
-      <h1>Post slug: {id}</h1>
     </div>
   );
 };

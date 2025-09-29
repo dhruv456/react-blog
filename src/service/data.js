@@ -1,4 +1,4 @@
-import { Account, Client, Databases, ID, Query } from "appwrite";
+import { Account, Client, Databases, ID, Query, Storage } from "appwrite";
 import conf from "../conf/conf";
 import authService from "./auth";
 
@@ -9,6 +9,7 @@ class DataService {
             .setProject(conf.appWriteProjectId);
         this.account = new Account(this.client);
         this.databases = new Databases(this.client);
+        this.storage = new Storage(this.client);
     }
 
     async getPostById(slug) {
@@ -26,7 +27,13 @@ class DataService {
     }
 
     async createPost(post) {
-        const { title, content, featuredImage = "", status, slug, userId } = post
+        const { title, content, image, status, slug, userId } = post;
+        let featuredImage = "";
+        try {
+            featuredImage = image ? (await this.uploadFile(image)).$id : "";
+        } catch (error) {
+            throw new Error("Error in Uploading image");
+        }
         const userId_ot = userId || (await authService.getLogInUser()).$id
         try {
             const result = await this.databases.createDocument(
@@ -84,6 +91,21 @@ class DataService {
         console.log(result);
         return true;
     }
+
+    async uploadFile(file) {
+        try {
+            const uploadedFile = await this.storage.createFile(conf.appWriteBucketId, ID.unique(), file);
+            return uploadedFile;
+        } catch (error) {
+            console.error("appwrite service :: uploadFile :: error", error);
+            throw error;
+        }
+    }
+
+    getFileUrl(fileId) {
+        return this.storage.getFileView(conf.appWriteBucketId, fileId);
+    }
+
 }
 
 const dataService = new DataService();

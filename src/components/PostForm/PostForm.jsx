@@ -17,8 +17,9 @@ const PostForm = () => {
     defaultValues: {
       title: "",
       slug: "",
-      content: "<h1>Hello, world!!</h1>",
+      content: "",
       status: "active",
+      image: null,
     },
   });
 
@@ -43,7 +44,10 @@ const PostForm = () => {
   };
   const onsubmit = async (data) => {
     try {
-      const res = await dataService.createPost(data);
+      const res = await dataService.createPost({
+        ...data,
+        image: data?.image?.[0],
+      });
       if (!res) {
         console.error("config related error while submitting form");
         return;
@@ -102,6 +106,15 @@ const PostForm = () => {
               render={({ field: { onChange, value } }) => (
                 <RTE onChange={onChange} value={value} />
               )}
+            />
+          </div>
+          <div>
+            <Controller
+              name="image"
+              control={control}
+              render={({ field }) => {
+                return <Input type="file" {...field} accept="image/*" />;
+              }}
             />
           </div>
         </div>

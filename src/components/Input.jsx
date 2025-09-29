@@ -1,6 +1,7 @@
 import { useId } from "react";
 
 const Input = ({ label, type = "text", className = "", ...props }) => {
+  const { onChange, value, ...others } = props;
   const id = useId();
   console.log("Input rendered - ", label, props.value);
   return (
@@ -13,7 +14,15 @@ const Input = ({ label, type = "text", className = "", ...props }) => {
       <input
         className={`px-3 py-2 rounded-lg bg-white text-black focus:outline-blue-800 w-full duration-200 ${className}`}
         type={type}
-        {...props}
+        onChange={(e) => {
+          if (type == "file") {
+            onChange(e.target.files);
+          } else {
+            onChange(e.target.value);
+          }
+        }}
+        value={type !== "file" ? value : undefined}
+        {...others}
         id={id}
       />
     </div>
